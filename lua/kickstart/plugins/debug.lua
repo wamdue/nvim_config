@@ -30,9 +30,9 @@ return {
     return {
       -- Basic debugging keymaps, feel free to change to your liking!
       { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
-      { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
-      { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
-      { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
+      { '<F9>', dap.step_into, desc = 'Debug: Step Into' },
+      { '<F10>', dap.step_over, desc = 'Debug: Step Over' },
+      { '<F11>', dap.step_out, desc = 'Debug: Step Out' },
       { '<leader>b', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
       {
         '<leader>B',
@@ -73,8 +73,59 @@ return {
       -- Set icons to characters that are more likely to work in every terminal.
       --    Feel free to remove or use ones that you like more! :)
       --    Don't feel like these are good choices.
+      mappings = {
+        expand = { 'CR', '2-LeftMouse' },
+        open = 'o',
+        remove = 'd',
+        edit = 'e',
+        repl = 'r',
+        toggle = 't',
+      },
+      element_mappings = {},
+      expand_lines = vim.fn.has 'nvim-0.7' == 1,
+      force_buffers = true,
+      layouts = {
+        {
+          -- You can change the order of elements in the sidebar
+          elements = {
+            -- Provide IDs as strings or tables with "id" and "size" keys
+            {
+              id = 'scopes',
+              size = 0.25, -- Can be float or integer > 1
+            },
+            { id = 'breakpoints', size = 0.25 },
+            { id = 'stacks', size = 0.25 },
+            { id = 'watches', size = 0.25 },
+          },
+          size = 40,
+          position = 'left', -- Can be "left" or "right"
+        },
+        {
+          elements = {
+            'repl',
+            'console',
+          },
+          size = 10,
+          position = 'bottom', -- Can be "bottom" or "top"
+        },
+      },
+      floating = {
+        max_height = nil,
+        max_width = nil,
+        border = 'single',
+        mappings = {
+          ['close'] = { 'q', '<Esc>' },
+        },
+      },
+      render = {
+        max_type_length = nil, -- Can be integer or nil.
+        max_value_lines = 100, -- Can be integer or nil.
+        indent = 1,
+      },
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
+        enabled = vim.fn.exists 'winbar' == 1,
+        element = 'repl',
         icons = {
           pause = '⏸',
           play = '▶',
@@ -95,6 +146,15 @@ return {
 
     -- Install golang specific config
     require('dap-go').setup {
+      config = {
+        {
+          -- Must be "go" or it will be ignored by the plugin
+          type = 'go',
+          name = 'Attach remote',
+          mode = 'remote',
+          request = 'attach',
+        },
+      },
       delve = {
         -- On Windows delve must be run attached or it crashes.
         -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
